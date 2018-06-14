@@ -1,6 +1,7 @@
 
 enum ArrayError: Error {
     case arraysAreNotEqual
+    case arraysIsEmpty
 }
 
 
@@ -18,35 +19,41 @@ protocol Container {
 extension Array: Container {
 }
 
-
+/////////////////////////////
+//Вариант 1
 if firstNumber.count == secondNumber.count {
     let multiplication = zip(firstNumber, secondNumber).map { $0 * $1 }
     print(multiplication)
 }
 
-func multiplication<C1: Container, C2: Container>(_ someContainer: C1, _ anotherContainer: C2) throws -> [Int]? where C1.Element == C2.Element, C1.Element: Equatable {
+
+////////////////////////////
+//Вариант 2
+func multiplication<C: Container>(_ someContainer: [C], _ anotherContainer: [C]) throws -> [C] {
     
     // Проверяем одинаковое ли количество элементов находится в контейнерах.
-    if someContainer.count != anotherContainer.count {
+    guard someContainer.count == anotherContainer.count else {
         throw ArrayError.arraysAreNotEqual
     }
+    guard !someContainer.isEmpty else {
+        throw ArrayError.arraysIsEmpty
+    }
     
-    var first = [0]
-    var second = [0]
+    var first: [C] = []
+    var second: [C] = []
     
-    var multiplication = [0]
+    var multiplication: [C] = zip(first, second).map { $0 * $1 }
     
     
     // Объединяем массивы
     for i in 0...someContainer.count {
-        first.append(someContainer[i] as! Int)
-        second.append(anotherContainer[i] as! Int)
+        first.append(someContainer[i])
+        second.append(anotherContainer[i])
         
-        multiplication.append(first[i]*second[i])
     }
     return multiplication
 }
 
 print("==========")
-print(try multiplication(firstNumber, secondNumber)!)
+print()
 print("==========")
