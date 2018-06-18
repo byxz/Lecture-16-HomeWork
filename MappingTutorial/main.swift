@@ -8,52 +8,59 @@ enum ArrayError: Error {
 let firstNumber = [3, 4, 2, 12, 14, 78, 1]
 let secondNumber = [5, 33, 1, 8, 12, 31, 3]
 
-
-protocol Container {
-    associatedtype Element
-    var count: Int { get }
-    mutating func append(_ element: Element)
-    subscript(index: Int) -> Element { get set }
+protocol MultiplicationValue {
+    static func multiplay(first: Self, second: Self) -> Self
 }
 
-extension Array: Container {
+extension Int: MultiplicationValue {
+    static func multiplay(first: Int, second: Int) -> Int {
+        return first * second
+    }
 }
 
-/////////////////////////////
-//Вариант 1
-if firstNumber.count == secondNumber.count {
-    let multiplication = zip(firstNumber, secondNumber).map { $0 * $1 }
-    print(multiplication)
+extension Double: MultiplicationValue {
+    static func multiplay(first: Double, second: Double) -> Double {
+        return first * second
+    }
 }
 
 
-////////////////////////////
-//Вариант 2
-func multiplication<C: Container>(_ someContainer: [C], _ anotherContainer: [C]) throws -> [C] {
+func sumArrays<T: MultiplicationValue>(first: [T], second: [T]) throws -> [T] {
     
-    // Проверяем одинаковое ли количество элементов находится в контейнерах.
-    guard someContainer.count == anotherContainer.count else {
+    
+    guard first.count == second.count else {
         throw ArrayError.arraysAreNotEqual
     }
-    guard !someContainer.isEmpty else {
-        throw ArrayError.arraysIsEmpty
+    guard first.isEmpty else {
+        return []
     }
     
-    var first: [C] = []
-    var second: [C] = []
+    var multiplication = [T]()
+
     
-    var multiplication: [C] = zip(first, second).map { $0 * $1 }
-    
-    
-    // Объединяем массивы
-    for i in 0...someContainer.count {
-        first.append(someContainer[i])
-        second.append(anotherContainer[i])
-        
+    for i in 0..<first.count {
+        let a = T.multiplay(first: first[i], second: second[i])
+        multiplication.append(a)
     }
+    
     return multiplication
 }
 
-print("==========")
-print()
-print("==========")
+
+// Создать тип "Последнее значение", которое инициализируется с массиво и сохраняет его последний элемент.
+class LastValue<T> {
+    
+    let typeValue: T?
+    
+    init (_ arr: [T]) {
+        
+        guard !arr.isEmpty else {
+            print(ArrayError.arraysIsEmpty)
+            typeValue = nil
+            return
+        }
+       
+        typeValue = arr.last
+    }
+    
+}
